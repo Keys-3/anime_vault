@@ -11,8 +11,6 @@ interface Props {
 export default function EpisodePlayer({ anime, episodesCount }: Props) {
   const [currentEpisode, setCurrentEpisode] = useState(1);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-  const [episodeData, setEpisodeData] = useState<any[]>([]);
-  const [loadingEpisodes, setLoadingEpisodes] = useState(false);
 
   const chunkSize = 100;
   const totalChunks = Math.max(1, Math.ceil(episodesCount / chunkSize));
@@ -26,28 +24,7 @@ export default function EpisodePlayer({ anime, episodesCount }: Props) {
 
   const hasTrailer = !!anime.trailer?.youtube_id;
 
-  // Fetch episode names for the current chunk
-  useEffect(() => {
-    const fetchEpisodes = async () => {
-      setLoadingEpisodes(true);
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${anime.mal_id}/episodes?page=${currentChunkIndex + 1}`);
-        if (res.ok) {
-          const json = await res.json();
-          setEpisodeData(json.data || []);
-        }
-      } catch (e) {
-        console.error("Failed to fetch episodes", e);
-      } finally {
-        setLoadingEpisodes(false);
-      }
-    };
-    fetchEpisodes();
-  }, [anime.mal_id, currentChunkIndex]);
-
-  // Find current episode name
-  const currentEpData = episodeData.find(ep => ep.mal_id === currentEpisode);
-  const currentEpName = currentEpData?.title ? ` - ${currentEpData.title}` : "";
+  const currentEpName = "";
 
   return (
     <>
@@ -129,15 +106,9 @@ export default function EpisodePlayer({ anime, episodesCount }: Props) {
         </div>
         
         <div className="w-full bg-[#161921] border border-gray-800 rounded-2xl overflow-hidden relative min-h-[100px]">
-          {loadingEpisodes && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#161921]/80 backdrop-blur-sm">
-              <Image src="/spinner.svg" alt="loading" width={40} height={40} className="object-contain" />
-            </div>
-          )}
           <div className="max-h-72 overflow-y-auto p-4 flex flex-col gap-2 custom-scrollbar">
             {episodesArray.map((ep) => {
-              const epData = episodeData.find(e => e.mal_id === ep);
-              const epTitle = epData?.title ? `: ${epData.title}` : "";
+              const epTitle = "";
               
               return (
                 <button 

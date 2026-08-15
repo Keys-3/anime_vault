@@ -7,11 +7,45 @@ interface PageProps {
 }
 
 async function getAnimeDetails(id: string) {
+  const query = `
+    query($id: Int) {
+      Media(id: $id, type: ANIME) {
+        id
+        title { english romaji }
+        coverImage { large }
+        format
+        episodes
+        averageScore
+        status
+        description(asHtml: false)
+        trailer { id site }
+      }
+    }
+  `;
   try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/full`, { cache: 'no-store' });
+    const res = await fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, variables: { id: parseInt(id) } }),
+      cache: "no-store",
+    });
     if (!res.ok) return null;
     const json = await res.json();
-    return json.data;
+    const media = json.data?.Media;
+    if (!media) return null;
+    
+    return {
+      mal_id: media.id,
+      title: media.title.romaji,
+      title_english: media.title.english || media.title.romaji,
+      images: { jpg: { large_image_url: media.coverImage.large } },
+      type: media.format || "Anime",
+      episodes: media.episodes,
+      score: media.averageScore ? media.averageScore / 10 : null,
+      status: media.status,
+      synopsis: media.description,
+      trailer: media.trailer?.site === "youtube" ? { youtube_id: media.trailer.id } : null
+    };
   } catch (e) {
     return null;
   }
