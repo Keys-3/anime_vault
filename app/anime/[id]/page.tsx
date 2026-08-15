@@ -8,7 +8,7 @@ interface PageProps {
 
 async function getAnimeDetails(id: string) {
   try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/full`, { next: { revalidate: 3600 } });
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/full`, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
@@ -54,7 +54,6 @@ export default async function AnimeDetails({ params }: PageProps) {
         <div className="flex-1 flex flex-col gap-5">
           <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400 mb-2">{animeName}</h1>
-            <p className="text-gray-400 text-xl font-medium">{anime.title_japanese || anime.title}</p>
           </div>
           
           <div className="flex flex-wrap gap-3 my-2">

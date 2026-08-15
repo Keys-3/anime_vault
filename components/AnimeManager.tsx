@@ -106,6 +106,36 @@ export default function AnimeManager({ initialData }: Props) {
         <section className="flex justify-center items-center w-full min-h-[50vh]">
           <Image src="/spinner.svg" alt="spinner" width={56} height={56} className="object-contain" />
         </section>
+      ) : data.length === 0 ? (
+        <section className="flex flex-col justify-center items-center w-full min-h-[50vh] gap-4">
+          <p className="text-white text-xl font-bold">No anime found!</p>
+          <div className="flex gap-4">
+            <button 
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  const res = await fetchAnime(1, search, category);
+                  setData(res);
+                  setPage(2);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              Retry
+            </button>
+            <button 
+              onClick={() => {
+                setSearch("");
+                setCategory("");
+              }}
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </section>
       ) : (
         <>
           <section className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-10">

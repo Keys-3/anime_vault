@@ -11,7 +11,7 @@ export const fetchAnime = async (page: number, search?: string, kind?: string) =
     }
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { cache: 'no-store' });
       const res = await response.json();
       
       return res.data || [];
