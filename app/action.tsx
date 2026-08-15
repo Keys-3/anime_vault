@@ -1,13 +1,22 @@
 "use server";
 
-import AnimeCard, { AnimeProp } from "@/components/AnimeCard";
+export const fetchAnime = async (page: number, search?: string, kind?: string) => {
+    let url = "";
+    if (search || kind) {
+       url = `https://api.jikan.moe/v4/anime?page=${page}&limit=8`;
+       if (search) url += `&q=${encodeURIComponent(search)}`;
+       if (kind) url += `&type=${encodeURIComponent(kind)}`;
+    } else {
+       url = `https://api.jikan.moe/v4/top/anime?page=${page}&limit=8`;
+    }
 
-export const fetchAnime = async (page: number) => {
-    const response = await fetch(`https://shikimori.one/api/animes?page=${page}&limit=8&order=popularity`);
-
-    const data = await response.json();
-
-    return data.map((item: AnimeProp, index: number) => (
-        <AnimeCard key={item.id} anime={item} index={index} />
-      ))
+    try {
+      const response = await fetch(url);
+      const res = await response.json();
+      
+      return res.data || [];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
 };
